@@ -3,73 +3,606 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ilias Azizi - Research & Work</title>
+
+    <title>Ilias Azizi | Vector Search Researcher</title>
+    <meta name="description"
+          content="Ilias Azizi — Postdoctoral researcher working on scalable vector search, graph-based ANN, vector databases, and efficient AI retrieval systems.">
+
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-        h1, h2 { color: #2c3e50; }
-        a { color: #3498db; text-decoration: none; }
-        .container { max-width: 800px; margin: auto; }
-        .section { margin-bottom: 30px; }
+        :root {
+            --bg: #f7f8fa;
+            --card: #ffffff;
+            --text: #172033;
+            --muted: #667085;
+            --accent: #2563eb;
+            --accent-dark: #1d4ed8;
+            --border: #e5e7eb;
+            --tag-bg: #eef4ff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.65;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--accent-dark);
+        }
+
+        .container {
+            max-width: 980px;
+            margin: auto;
+            padding: 0 24px;
+        }
+
+        /* HERO */
+
+        .hero {
+            padding: 90px 0 65px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(42px, 7vw, 68px);
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+
+        .hero .role {
+            margin-top: 18px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .hero .subtitle {
+            max-width: 720px;
+            margin-top: 15px;
+            color: var(--muted);
+            font-size: 18px;
+        }
+
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 11px;
+            margin-top: 28px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            border-color: #b8c2d5;
+            color: var(--accent);
+        }
+
+        .button.primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .button.primary:hover {
+            background: var(--accent-dark);
+            color: white;
+        }
+
+        /* SECTIONS */
+
+        section {
+            padding: 28px 0 45px;
+        }
+
+        h2 {
+            font-size: 27px;
+            letter-spacing: -0.7px;
+            margin: 0 0 22px;
+        }
+
+        .section-intro {
+            color: var(--muted);
+            margin: -10px 0 24px;
+            max-width: 730px;
+        }
+
+        /* RESEARCH TAGS */
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .tag {
+            padding: 7px 11px;
+            border-radius: 7px;
+            background: var(--tag-bg);
+            color: #2454a6;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* PUBLICATIONS */
+
+        .publication {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .publication:last-child {
+            border-bottom: none;
+        }
+
+        .year {
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 14px;
+            padding-top: 3px;
+        }
+
+        .publication-title {
+            font-weight: 700;
+            font-size: 17px;
+            color: var(--text);
+        }
+
+        .publication-title:hover {
+            color: var(--accent);
+        }
+
+        .venue {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* EXPERIENCE */
+
+        .experience {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 28px;
+            border-left: 2px solid var(--border);
+        }
+
+        .experience:before {
+            content: "";
+            position: absolute;
+            left: -6px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .experience h3 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .experience .date {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 3px 0 8px;
+        }
+
+        .experience p {
+            margin: 0;
+            color: #475467;
+        }
+
+        /* TALKS */
+
+        .talk-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .talk {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .talk strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .talk span {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* CTA */
+
+        .cta {
+            margin: 40px 0 70px;
+            padding: 35px;
+            background: #172033;
+            color: white;
+            border-radius: 16px;
+        }
+
+        .cta h2 {
+            margin-bottom: 8px;
+        }
+
+        .cta p {
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .cta a {
+            color: white;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 30px 0 45px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+
+            .hero {
+                padding-top: 60px;
+            }
+
+            .publication {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
+            .talk-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
+
+<div class="container">
+
+    <!-- HERO -->
+
+    <header class="hero">
         <h1>Ilias Azizi</h1>
-        <p>Postdoctoral Researcher | Scalable Vector Search | Graph-Based ANNS</p>
-        
-        <div class="section">
-            <h2>Research Interest</h2>
-            <p>My research focuses on graph-based approximate nearest neighbor search (Graph ANNS) and large-scale vector search systems.</p>
+
+        <div class="role">
+            Postdoctoral Researcher · Vector Search & AI Retrieval Systems
         </div>
 
-        <div class="section">
-<h2>Publications</h2>
-<ul>
-    <li><b><a href="https://arxiv.org/abs/2509.05750">Toward Efficient and Scalable Design of In-Memory Graph-Based Vector Search</a></b> (VecDB Workshop @ ICML, 2025)</li>
-    <li><b><a href="https://arxiv.org/pdf/2502.05575">Graph-Based Vector Search: An Experimental Evaluation</a></b> (ACM SIGMOD, 2025)</li>
-    <li><b><a href="https://vldb.org/2024/files/phd-workshop-papers/vldb_phd_workshop_paper_id_13.pdf">Vector Search on Billion-Scale Data Collections</a></b> (Phd Workshop @ VLDB, 2024)</li>
-    <li><b><a href="https://www.researchgate.net/publication/370166516_ELPIS_Graph-Based_Similarity_Search_for_Scalable_Data_Science">Elpis: Graph-Based Similarity Search for Scalable Data Science</a></b> (VLDB, 2023)</li>
-</ul>
+        <p class="subtitle">
+            I work on scalable vector search, graph-based approximate nearest
+            neighbor search, and efficient retrieval systems for modern AI
+            applications. My research spans algorithm design, large-scale
+            experimentation, and high-performance vector indexing.
+        </p>
+
+        <div class="links">
+            <a class="button primary" href="/Doc/cv/CV.pdf">Download CV</a>
+
+            <a class="button"
+               href="https://scholar.google.com/"
+               target="_blank">Google Scholar</a>
+
+            <a class="button"
+               href="https://github.com/iliasazizi"
+               target="_blank">GitHub</a>
+
+            <a class="button"
+               href="https://www.linkedin.com/in/ilias-azizi-292466213/"
+               target="_blank">LinkedIn</a>
+
+            <a class="button"
+               href="mailto:azizii.ilias@gmail.com">Email</a>
+        </div>
+    </header>
 
 
+    <!-- RESEARCH -->
 
-        <div class="section">
-            <h2>Work Experience</h2>
-            <ul>
-               <li><b>Postdoctoral Fellow, CNRS & UM6P (2025–Present)</b> – Conducting research on advanced AI-driven retrieval systems and scalable similarity search at Paris Cergy University.</li>
-<li><b>Applied Scientist Intern, Amazon (2024)</b> – Designed and implemented optimization techniques for large-scale vector search systems, enhancing retrieval speed and scalability for next-generation AI applications.</li>
-<li><b>Teaching Assistant, Université Paris-Cité (2022–2023)</b> – Delivered Python programming labs for undergraduate students.</li>
-<li><b>Teaching Assistant, UM6P (2022–2023)</b> – Supported Database Management lectures and labs for engineering students.</li>
-<li><b>Machine Learning Engineer, Farasha Systems (2019)</b> – Developed ML models for AI-assisted predictive maintenance at Noor I CSP solar plant, Ouarzazate, Morocco.</li>
-            </ul>
+    <section>
+        <h2>Research</h2>
+
+        <p class="section-intro">
+            My research focuses on building scalable and efficient systems for
+            searching high-dimensional vector collections, with particular
+            emphasis on graph-based indexing and billion-scale retrieval.
+        </p>
+
+        <div class="tags">
+            <span class="tag">Vector Search</span>
+            <span class="tag">Approximate Nearest Neighbor Search</span>
+            <span class="tag">Graph-Based ANN</span>
+            <span class="tag">Vector Databases</span>
+            <span class="tag">Large-Scale Retrieval</span>
+            <span class="tag">High-Dimensional Data</span>
+            <span class="tag">Efficient AI Systems</span>
         </div>
-        
-        <div class="section">
-        <h2>Talks and Presentations</h2>
-            <ul>
-<li><b>ENSEA Engineering School</b> – Prepared and delivered lectures on Vector Database Management Systems for second-year engineering students.</li>
-<li><b>University Paris Dauphine – ENS</b> – Gave a lecture on vector databases and graph-based vector search for M2 students in the Data Management course.</li>
-<li><b>Amazon AGI</b> – Delivered a talk on scalable similarity search and graph-based indexing methods for large-scale vector data.</li>
-<li><b>VLDB 2024</b> – Presented PhD workshop paper on billion-scale vector search and hybrid indexing techniques.</li>
-<li><b>UM6P Science Week 2024</b> – Invited speaker on AI-driven retrieval systems and efficient similarity search techniques.</li>
-<li><b>Meta FAISS 2024</b> – Gave a talk on graph-based similarity search and introduced ELPIS for efficient vector indexing.</li>
-<li><b>VLDB 2023</b> – Presented ELPIS at the main conference session on similarity search for high-dimensional vectors.</li>
-<li><b>DiNo Seminars</b> – Regular contributor and presenter on scalable data systems and graph-based retrieval methods.</li>
-<li><b>UM6P-CS Seminars</b> – Gave talks on similarity search, indexing algorithms, and AI applications in large-scale data environments.</li>
-            </ul>
+    </section>
+
+
+    <!-- SELECTED PUBLICATIONS -->
+
+    <section>
+        <h2>Selected Publications & Tutorials</h2>
+
+        <div class="publication">
+            <div class="year">2026</div>
+
+            <div>
+                <a class="publication-title"
+                   href="https://link.springer.com/book/9783032398192">
+                    Navigating the Vector Search Landscape:
+                    ANN Indexes for Modern AI Systems
+                </a>
+
+                <div class="venue">
+                    ADBIS 2026 · Tutorial
+                </div>
+            </div>
         </div>
-        
-        <div class="section">
-            <h2>My CV</h2>
-            <p><a href="/Doc/cv/CV.pdf" download>Click here to download my CV (PDF)</a></p>
+
+
+        <div class="publication">
+            <div class="year">2026</div>
+
+            <div>
+                <a class="publication-title"
+                   href="https://arxiv.org/abs/2606.21535">
+                    From Embedding Geometry to Spectral Search:
+                    Energy Dispersion Networks for Vector Retrieval
+                </a>
+
+                <div class="venue">
+                    arXiv
+                </div>
+            </div>
         </div>
-        
-        <div class="section">
-            <h2>Contact</h2>
-            <p>Email: azizii.ilias@gmail.com</p>
-            <p>LinkedIn: <a href="https://www.linkedin.com/in/ilias-azizi-292466213/">linkedin.com/in/ilias-azizi</a></p>
-            <p>GitHub: <a href="https://github.com/iliasazizi">github.com/i-l-y-a-s</a></p>
+
+
+        <div class="publication">
+            <div class="year">2025</div>
+
+            <div>
+                <a class="publication-title"
+                   href="https://arxiv.org/abs/2502.05575">
+                    Graph-Based Vector Search:
+                    An Experimental Evaluation of the State-of-the-Art
+                </a>
+
+                <div class="venue">
+                    ACM SIGMOD / PACMMOD 2025
+                </div>
+            </div>
         </div>
+
+
+        <div class="publication">
+            <div class="year">2025</div>
+
+            <div>
+                <a class="publication-title"
+                   href="https://arxiv.org/abs/2509.05750">
+                    Toward Efficient and Scalable Design of
+                    In-Memory Graph-Based Vector Search
+                </a>
+
+                <div class="venue">
+                    VecDB Workshop @ ICML 2025
+                </div>
+            </div>
+        </div>
+
+
+        <div class="publication">
+            <div class="year">2024</div>
+
+            <div>
+                <a class="publication-title"
+                   href="https://vldb.org/2024/files/phd-workshop-papers/vldb_phd_workshop_paper_id_13.pdf">
+                    Vector Search on Billion-Scale Data Collections
+                </a>
+
+                <div class="venue">
+                    VLDB 2024 · PhD Workshop
+                </div>
+            </div>
+        </div>
+
+
+        <div class="publication">
+            <div class="year">2023</div>
+
+            <div>
+                <a class="publication-title"
+                   href="https://www.researchgate.net/publication/370166516_ELPIS_Graph-Based_Similarity_Search_for_Scalable_Data_Science">
+                    ELPIS: Graph-Based Similarity Search
+                    for Scalable Data Science
+                </a>
+
+                <div class="venue">
+                    PVLDB 2023
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- EXPERIENCE -->
+
+    <section>
+        <h2>Experience</h2>
+
+        <div class="experience">
+            <h3>Postdoctoral Researcher · Université Paris Cité</h3>
+            <div class="date">2026 – Present · Paris, France</div>
+
+            <p>
+                Research on scalable graph-based vector search,
+                efficient ANN indexing, and large-scale similarity search systems.
+            </p>
+        </div>
+
+
+        <div class="experience">
+            <h3>Postdoctoral Researcher · CNRS / ETIS</h3>
+            <div class="date">2025 – 2026 · Cergy, France</div>
+
+            <p>
+                Research on scalable and energy-efficient vector retrieval
+                systems and graph-based ANN algorithms.
+            </p>
+        </div>
+
+
+        <div class="experience">
+            <h3>Applied Scientist Intern · Amazon AGI</h3>
+            <div class="date">2024 · Los Angeles, USA</div>
+
+            <p>
+                Worked on large-scale graph-based vector search,
+                indexing algorithms, and billion-scale retrieval optimization.
+            </p>
+        </div>
+
+
+        <div class="experience">
+            <h3>PhD Researcher · Université Paris Cité & UM6P</h3>
+            <div class="date">2020 – 2024</div>
+
+            <p>
+                PhD on scalable high-dimensional vector similarity search,
+                including graph-based ANN indexing and billion-scale retrieval.
+            </p>
+        </div>
+
+
+        <div class="experience">
+            <h3>Machine Learning Engineer · Farasha Systems</h3>
+            <div class="date">2019 · Morocco</div>
+
+            <p>
+                Developed machine-learning models for predictive maintenance
+                in industrial solar-energy systems.
+            </p>
+        </div>
+
+    </section>
+
+
+    <!-- TALKS -->
+
+    <section>
+        <h2>Selected Talks & Teaching</h2>
+
+        <div class="talk-grid">
+
+            <div class="talk">
+                <strong>ADBIS 2026</strong>
+                <span>
+                    Tutorial — Navigating the Vector Search Landscape
+                </span>
+            </div>
+
+            <div class="talk">
+                <strong>Meta FAISS</strong>
+                <span>
+                    Graph-based similarity search and ELPIS
+                </span>
+            </div>
+
+            <div class="talk">
+                <strong>VLDB</strong>
+                <span>
+                    Billion-scale vector search and graph-based indexing
+                </span>
+            </div>
+
+            <div class="talk">
+                <strong>Amazon AGI</strong>
+                <span>
+                    Scalable similarity search and graph-based retrieval
+                </span>
+            </div>
+
+            <div class="talk">
+                <strong>Université Paris Dauphine – ENS</strong>
+                <span>
+                    Lecture on vector databases and graph-based vector search
+                </span>
+            </div>
+
+            <div class="talk">
+                <strong>ENSEA</strong>
+                <span>
+                    Vector database management systems
+                </span>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- CONTACT -->
+
+    <div class="cta">
+        <h2>Interested in vector search?</h2>
+
+        <p>
+            I am interested in collaborations around vector databases,
+            graph-based ANN, scalable retrieval, and efficient AI systems.
+        </p>
+
+        <a href="mailto:azizii.ilias@gmail.com">
+            azizii.ilias@gmail.com →
+        </a>
     </div>
+
+
+    <footer>
+        © 2026 Ilias Azizi
+    </footer>
+
+</div>
+
 </body>
 </html>
