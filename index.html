@@ -292,6 +292,48 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Animated graph: self-contained, no external libraries. */
+        .hero {
+            position: relative;
+            isolation: isolate;
+        }
+        #graph-background {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            mask-image: linear-gradient(to right, transparent 12%, #000 58%),
+                        linear-gradient(to bottom, #000 75%, transparent 100%);
+            mask-composite: intersect;
+            -webkit-mask-image: linear-gradient(to right, transparent 12%, #000 58%),
+                                linear-gradient(to bottom, #000 75%, transparent 100%);
+            -webkit-mask-composite: source-in;
+        }
+        .hero .role { max-width: 630px; }
+        .hero .subtitle { max-width: 610px; }
+        .hero-content { position: relative; }
+        .hero-content::before {
+            content: "";
+            position: absolute;
+            inset: -24px -12px -20px -24px;
+            z-index: -1;
+            background: linear-gradient(90deg, var(--bg) 0%,
+                        rgba(247,248,250,.94) 40%, rgba(247,248,250,.35) 67%, transparent 82%);
+            pointer-events: none;
+        }
+        @media (max-width: 700px) {
+            #graph-background { opacity: .65; }
+            .hero-content::before {
+                background: linear-gradient(90deg, var(--bg), rgba(247,248,250,.85) 50%, rgba(247,248,250,.55));
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .button { transition: none; }
+        }
     </style>
 </head>
 
@@ -302,6 +344,8 @@
     <!-- HERO -->
 
     <header class="hero">
+        <canvas id="graph-background" aria-hidden="true"></canvas>
+        <div class="hero-content">
         <h1>Ilias Azizi</h1>
 
         <div class="role">
@@ -332,6 +376,7 @@
 
             <a class="button"
                href="mailto:azizii.ilias@gmail.com">Email</a>
+        </div>
         </div>
     </header>
 
@@ -588,8 +633,7 @@
         <h2>Interested in vector search?</h2>
 
         <p>
-            I am interested in collaborations around vector databases,
-            graph-based ANN, scalable retrieval, and efficient AI systems.
+       I am interested in collaborations in scalable data systems, information retrieval, vector search, and efficient AI systems.
         </p>
 
         <a href="mailto:azizii.ilias@gmail.com">
@@ -603,6 +647,161 @@
     </footer>
 
 </div>
+
+
+<script>
+(() => {
+    'use strict';
+    const hero = document.querySelector('.hero');
+    const canvas = document.getElementById('graph-background');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    const coarse = matchMedia('(pointer: coarse)');
+    let width = 0, height = 0, frame = 0, last = 0, time = 0;
+    let visible = true, paused = motion.matches;
+    let mouseX = 0, mouseY = 0, easeX = 0, easeY = 0;
+    let seed = 1947;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    // Fibonacci sphere with small seeded offsets: a stable, spatial graph.
+    const count = 38;
+    const nodes = Array.from({ length: count }, (_, i) => {
+        const y = 1 - 2 * (i + .5) / count;
+        const a = i * Math.PI * (3 - Math.sqrt(5));
+        const r = Math.sqrt(1 - y * y) * (.8 + random() * .2);
+        return { x: Math.cos(a) * r, y: y * .8, z: Math.sin(a) * r, neighbors: [] };
+    });
+    const edges = [], edgeSet = new Set();
+    nodes.forEach((node, i) => {
+        const nearest = nodes.map((other, j) => ({ j, d: (node.x-other.x)**2 + (node.y-other.y)**2 + (node.z-other.z)**2 }))
+            .filter(item => item.j !== i).sort((a,b) => a.d-b.d).slice(0,3);
+        nearest.forEach(({j}) => {
+            const key = [Math.min(i,j), Math.max(i,j)].join(':');
+            if (edgeSet.has(key)) return;
+            edgeSet.add(key); edges.push([i,j]);
+            nodes[i].neighbors.push(j); nodes[j].neighbors.push(i);
+        });
+    });
+    const signals = Array.from({ length: 5 }, (_, i) => ({
+        from: i * 7, to: nodes[i * 7].neighbors[0], progress: random(), speed: .24 + random() * .14, dwell: 0
+    }));
+    function project() {
+        const angle = time * .085 + .32 + easeX * .15;
+        const tilt = -.16 + Math.sin(time * .07) * .06 + easeY * .1;
+        const cy = Math.cos(angle), sy = Math.sin(angle), cx = Math.cos(tilt), sx = Math.sin(tilt);
+        const radius = Math.min(width * .33, height * .54, 272);
+        return nodes.map((node, id) => {
+            const x = node.x * cy + node.z * sy;
+            const z0 = -node.x * sy + node.z * cy;
+            const y = node.y * cx - z0 * sx;
+            const z = node.y * sx + z0 * cx;
+            const perspective = 3.7 / (3.7 - z);
+            return { id, x: width * .77 + x * radius * perspective + easeX * 8,
+                     y: height * .43 + y * radius * perspective + easeY * 5,
+                     z, scale: perspective, alpha: .3 + (z + 1) * .28 };
+        });
+    }
+    function draw(dt = 0) {
+        time += dt;
+        easeX += (mouseX - easeX) * .035;
+        easeY += (mouseY - easeY) * .035;
+        ctx.clearRect(0,0,width,height);
+        const points = project();
+        const halo = ctx.createRadialGradient(width*.77,height*.43,0,width*.77,height*.43,Math.min(width*.4,height*.65));
+        halo.addColorStop(0,'rgba(96,165,250,.07)'); halo.addColorStop(1,'rgba(96,165,250,0)');
+        ctx.fillStyle = halo; ctx.fillRect(0,0,width,height);
+        edges.forEach(([i,j]) => {
+            const a = points[i], b = points[j];
+            ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+            ctx.strokeStyle = `rgba(62,105,175,${.09 + (a.alpha+b.alpha)*.085})`;
+            ctx.lineWidth = .7 + (a.scale+b.scale)*.12; ctx.stroke();
+        });
+        signals.forEach(signal => {
+            // A short visit makes the yellow node visible before departure.
+            let travelTime = dt;
+            if (signal.dwell > 0) {
+                const heldTime = Math.min(signal.dwell, travelTime);
+                signal.dwell = Math.max(0, signal.dwell - heldTime);
+                travelTime -= heldTime;
+            }
+            signal.progress += travelTime * signal.speed;
+            if (signal.progress >= 1) {
+                signal.progress = 0;
+                const previous = signal.from;
+                signal.from = signal.to;
+                const candidates = nodes[signal.from].neighbors.filter(n => n !== previous);
+                signal.to = candidates[Math.floor(random()*candidates.length)] ?? previous;
+                signal.dwell = .42;
+            }
+            const a = points[signal.from], b = points[signal.to];
+            const t = signal.progress;
+            const x = a.x + (b.x-a.x)*t, y = a.y + (b.y-a.y)*t;
+            const tail = Math.max(0,t-.2);
+            const tx = a.x+(b.x-a.x)*tail, ty = a.y+(b.y-a.y)*tail;
+            const alpha = Math.min(a.alpha,b.alpha);
+            if (Math.hypot(x-tx,y-ty) > .1) {
+                const gradient = ctx.createLinearGradient(tx,ty,x,y);
+                gradient.addColorStop(0,'rgba(210,92,103,0)');
+                gradient.addColorStop(1,`rgba(210,92,103,${alpha*.9})`);
+                ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(x,y);
+                ctx.strokeStyle = gradient; ctx.lineWidth = 1.8; ctx.stroke();
+            }
+            ctx.beginPath(); ctx.arc(x,y,2.2,0,Math.PI*2);
+            ctx.fillStyle = `rgba(210,92,103,${alpha})`;
+            ctx.shadowColor = 'rgba(210,92,103,.5)'; ctx.shadowBlur = 9; ctx.fill(); ctx.shadowBlur = 0;
+        });
+        const activeNodes = new Set(signals.filter(signal => signal.dwell > 0).map(signal => signal.from));
+        points.sort((a,b) => a.z-b.z).forEach(p => {
+            const active = activeNodes.has(p.id);
+            const r = 2.2*p.scale;
+            const color = active ? '205,162,64' : '58,102,177';
+            ctx.beginPath(); ctx.arc(p.x,p.y,r+3,0,Math.PI*2);
+            ctx.fillStyle = `rgba(${active ? '225,185,86' : '96,165,250'},${p.alpha*(active ? .2 : .07)})`; ctx.fill();
+            ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2);
+            ctx.fillStyle = `rgba(${color},${p.alpha*.82})`;
+            ctx.shadowColor = active ? 'rgba(205,162,64,.45)' : 'transparent';
+            ctx.shadowBlur = active ? 10 : 0;
+            ctx.fill(); ctx.shadowBlur = 0;
+            ctx.beginPath(); ctx.arc(p.x-.5,p.y-.5,r*.35,0,Math.PI*2);
+            ctx.fillStyle = `rgba(255,255,255,${p.alpha*.8})`; ctx.fill();
+        });
+    }
+    function tick(timestamp) {
+        frame = 0;
+        if (paused || !visible || document.hidden) return;
+        if (!last) last = timestamp;
+        const elapsed = timestamp-last;
+        if (elapsed >= (width < 700 ? 1000/24 : 1000/30)) {
+            draw(Math.min(elapsed/1000,.06)); last = timestamp;
+        }
+        frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+        if (frame) cancelAnimationFrame(frame);
+        frame = 0; last = 0;
+        if (!paused && visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function resize() {
+        const rect = hero.getBoundingClientRect();
+        width = rect.width; height = rect.height;
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        canvas.width = Math.round(width*dpr); canvas.height = Math.round(height*dpr);
+        ctx.setTransform(dpr,0,0,dpr,0,0); draw();
+    }
+    hero.addEventListener('pointermove', event => {
+        if (coarse.matches || paused) return;
+        const rect = hero.getBoundingClientRect();
+        mouseX = (event.clientX-rect.left)/rect.width*2-1;
+        mouseY = (event.clientY-rect.top)/rect.height*2-1;
+    });
+    hero.addEventListener('pointerleave', () => { mouseX = mouseY = 0; });
+    motion.addEventListener('change', () => { paused = motion.matches; sync(); draw(); });
+    document.addEventListener('visibilitychange', sync);
+    new ResizeObserver(resize).observe(hero);
+    new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); }).observe(hero);
+    resize(); sync();
+})();
+</script>
 
 </body>
 </html>
